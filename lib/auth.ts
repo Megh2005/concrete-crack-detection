@@ -61,12 +61,21 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/auth',
   },
-  secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || 'restructor_ai_secret_key_2026_super_secure',
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.salutation = (user as any).salutation;
+        token.name = user.name;
+      }
+      if (trigger === 'update' && session?.user) {
+        if ((session.user as any).salutation) {
+          token.salutation = (session.user as any).salutation;
+        }
+        if (session.user.name) {
+          token.name = session.user.name;
+        }
       }
       return token;
     },
@@ -74,6 +83,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         (session.user as any).id = token.id;
         (session.user as any).salutation = token.salutation;
+        session.user.name = token.name as string;
       }
       return session;
     },

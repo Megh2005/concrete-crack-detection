@@ -79,11 +79,11 @@ export async function sendMail(payload: EmailPayload): Promise<SendMailResult> {
       details: info,
     };
   } catch (error: any) {
-    console.error('Email sending failed:', error?.message ? error.message : error);
+    console.error('Email sending failed:', error);
 
     return {
       success: false,
-      error: error?.message ? error.message : 'An error occurred while sending email.',
+      error: error?.message ? error.message : String(error),
       details: error,
     };
   }

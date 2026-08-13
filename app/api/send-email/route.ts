@@ -7,8 +7,8 @@ export async function POST(request: Request) {
 
     try {
       body = await request.json();
-    } catch {
-      console.error('Email sending failed: Invalid JSON payload');
+    } catch (parseError) {
+      console.error('Email sending failed: Invalid JSON payload', parseError);
       
       return NextResponse.json(
         {
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     const { to, from, subject, text, html } = body;
 
     if (!to || !from || !subject) {
-      console.error('Email sending failed: Missing required fields (to, from, or subject)');
+      console.error('Email sending failed: Missing required fields (to, from, or subject)', { to, from, subject });
 
       return NextResponse.json(
         {
@@ -44,15 +44,16 @@ export async function POST(request: Request) {
     if (result.success) {
       return NextResponse.json(result, { status: 200 });
     } else {
+      console.error('Email sending route failure:', result.error);
       return NextResponse.json(result, { status: 500 });
     }
   } catch (error: any) {
-    console.error('Email sending failed:', error?.message ? error.message : error);
+    console.error('Email sending route exception:', error);
 
     return NextResponse.json(
       {
         success: false,
-        error: error?.message ? error.message : 'Internal server error occurred while processing email request.',
+        error: error?.message ? error.message : String(error),
       },
       { status: 500 }
     );
