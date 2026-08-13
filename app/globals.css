@@ -12,8 +12,8 @@
 
 @layer base {
   .theme {
-    --font-heading: var(--font-sans);
-    --font-sans: var(--font-sans);
+    --font-heading: var(--font-roboto-slab);
+    --font-sans: var(--font-roboto-slab);
   }
   :root {
     --background: oklch(1 0 0);
@@ -91,4 +91,99 @@
   html {
     @apply font-sans;
   }
+}
+
+.glass-panel-light-theme {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(15, 23, 42, 0.12);
+  box-shadow: 
+    0 22px 50px -12px rgba(15, 23, 42, 0.16),
+    0 8px 24px -6px rgba(30, 58, 138, 0.12),
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.9);
+}
+
+.glass-panel-card {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(15, 23, 42, 0.14);
+  box-shadow: 
+    0 14px 32px -8px rgba(15, 23, 42, 0.14),
+    0 4px 14px -3px rgba(30, 58, 138, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-panel-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 18px 40px -8px rgba(15, 23, 42, 0.18),
+    0 6px 18px -3px rgba(29, 78, 216, 0.15);
+}
+
+.glass-btn-light-primary {
+  background: linear-gradient(180deg, #1d4ed8 0%, #1e40af 100%);
+  color: #ffffff;
+  border: 1.5px solid #1e3a8a;
+  box-shadow: 
+    0 8px 24px -4px rgba(29, 78, 216, 0.42),
+    0 4px 12px rgba(15, 23, 42, 0.15),
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.5),
+    inset 0 -2px 2px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-btn-light-primary:hover {
+  background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 
+    0 12px 30px -4px rgba(29, 78, 216, 0.52),
+    0 6px 16px rgba(15, 23, 42, 0.2),
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.6),
+    inset 0 -2px 2px rgba(0, 0, 0, 0.4);
+  transform: translateY(-1.5px);
+}
+
+.glass-btn-light-primary:active {
+  transform: translateY(1px);
+  box-shadow: 
+    0 4px 12px rgba(29, 78, 216, 0.3),
+    inset 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+.glass-btn-light-secondary {
+  background: rgba(255, 255, 255, 0.95);
+  color: #0f172a;
+  border: 1.5px solid rgba(15, 23, 42, 0.18);
+  box-shadow: 
+    0 8px 20px -4px rgba(15, 23, 42, 0.12),
+    0 3px 8px rgba(0, 0, 0, 0.06),
+    inset 0 1.5px 1px rgba(255, 255, 255, 1);
+  backdrop-filter: blur(12px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-btn-light-secondary:hover {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.3);
+  box-shadow: 
+    0 12px 26px -4px rgba(15, 23, 42, 0.16),
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    inset 0 1.5px 1px rgba(255, 255, 255, 1);
+  transform: translateY(-1.5px);
+}
+
+.glass-btn-light-secondary:active {
+  transform: translateY(1px);
+}
+
+@keyframes scan-line-light {
+  0% { transform: translateY(-100%); }
+  50% { transform: translateY(360px); }
+  100% { transform: translateY(-100%); }
+}
+
+.animate-scan-light {
+  animation: scan-line-light 4s ease-in-out infinite;
 }

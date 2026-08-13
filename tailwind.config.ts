@@ -9,6 +9,11 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["var(--font-roboto-slab)", "Roboto Slab", "serif"],
+        mono: ["var(--font-roboto-slab)", "Roboto Slab", "serif"],
+        serif: ["var(--font-roboto-slab)", "Roboto Slab", "serif"],
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
@@ -71,4 +76,3 @@ const config: Config = {
   plugins: [],
 };
 export default config;
-
