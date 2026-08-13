@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 interface AnalysisResult {
   processedImage: string;
   binaryMask: string;
+  grayscaleImage?: string;
   hasCrack: boolean;
   deepCrackCount: number;
   shallowCrackCount: number;
@@ -16,7 +17,9 @@ interface AnalysisResult {
   crackDensity: string;
   crackSeverity: string;
   faultRegime: string;
-  is456Status: string;
+  confidenceScore?: string;
+  disclaimer?: string;
+  detectedComponentsCount?: number;
 }
 
 export default function AnalyzePage() {
@@ -26,7 +29,7 @@ export default function AnalyzePage() {
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [activeTab, setActiveTab] = useState<'upload' | 'camera'>('upload');
-  const [viewMode, setViewMode] = useState<'processed' | 'raw' | 'mask'>('processed');
+  const [viewMode, setViewMode] = useState<'processed' | 'raw' | 'mask' | 'gray'>('processed');
 
   const webcamRef = useRef<Webcam>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -44,9 +47,9 @@ export default function AnalyzePage() {
     });
 
     toast.promise(inspectionPromise, {
-      loading: 'Running Sharp pixel inspection pipeline...',
-      success: (data: any) => data.hasCrack ? 'Crack detected & analyzed successfully' : 'Inspection complete — No crack detected',
-      error: (err: any) => err?.message || 'Inspection failed',
+      loading: 'Executing Sharp image analysis pipeline...',
+      success: (data: any) => data.hasCrack ? 'Analysis complete — Crack identified' : 'Analysis complete — Intact specimen',
+      error: (err: any) => err?.message || 'Analysis failed',
     });
 
     try {
@@ -115,7 +118,7 @@ export default function AnalyzePage() {
 
         <div className="text-center mb-5">
           <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-100 border border-blue-300 text-blue-800 text-[11px] font-bold uppercase tracking-wide mb-1.5">
-            Sharp Computer Vision Inspection
+            Sharp Multi-Representation Computer Vision Pipeline
           </div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
             Concrete Crack Surface Analysis
@@ -189,6 +192,8 @@ export default function AnalyzePage() {
                         ? selectedImage
                         : viewMode === 'mask' && analysisResult?.binaryMask
                         ? analysisResult.binaryMask
+                        : viewMode === 'gray' && analysisResult?.grayscaleImage
+                        ? analysisResult.grayscaleImage
                         : analysisResult?.processedImage || selectedImage
                     }
                     alt="Concrete specimen analysis"
@@ -196,55 +201,23 @@ export default function AnalyzePage() {
                   />
 
                   {isAnalyzing && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 overflow-hidden"
-                    >
-                      <motion.div
-                        className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-400 to-transparent"
-                        animate={{ top: ['0%', '100%', '0%'] }}
-                        transition={{ duration: 2.2, repeat: Infinity, ease: 'linear' }}
-                      />
-                      <div
-                        className="absolute inset-0 pointer-events-none"
-                        style={{
-                          backgroundImage: 'linear-gradient(rgba(59,130,246,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.06) 1px, transparent 1px)',
-                          backgroundSize: '24px 24px',
-                        }}
-                      />
-                      <div className="relative flex items-center justify-center">
-                        <div className="w-10 h-10 rounded-full border border-blue-400/30 absolute animate-ping" />
-                        <div className="w-7 h-7 rounded-full border-2 border-blue-400 border-t-transparent animate-spin" />
-                      </div>
-                      <div className="text-center space-y-1">
-                        <p className="text-white text-[11px] font-bold uppercase tracking-widest">
-                          Sharp Pixel Inspection
+                    <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-md flex flex-col items-center justify-center space-y-3 text-center p-4">
+                      <div className="w-full h-0.5 bg-blue-600 animate-pulse absolute top-0 left-0" />
+                      <div className="w-8 h-8 border-2 border-slate-700 border-t-blue-500 rounded-full animate-spin" />
+                      <div className="space-y-0.5">
+                        <p className="text-white text-xs font-bold uppercase tracking-wider">
+                          Processing Concrete Image...
                         </p>
-                        <motion.p
-                          className="text-blue-300 text-[10px] font-medium tracking-wide"
-                          animate={{ opacity: [0.4, 1, 0.4] }}
-                          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-                        >
-                          Analyzing grayscale variance...
-                        </motion.p>
+                        <p className="text-slate-400 text-[11px] font-medium">
+                          Executing Sharp Computer Vision Pipeline
+                        </p>
                       </div>
-                      <div className="flex gap-1 items-center">
-                        {[0, 0.3, 0.6, 0.9, 1.2].map((delay, i) => (
-                          <motion.div
-                            key={i}
-                            className="w-1 h-3 rounded-full bg-blue-400"
-                            animate={{ scaleY: [0.3, 1, 0.3] }}
-                            transition={{ duration: 0.9, repeat: Infinity, ease: 'easeInOut', delay }}
-                          />
-                        ))}
-                      </div>
-                    </motion.div>
+                    </div>
                   )}
                 </div>
 
                 <div className="max-w-[480px] mx-auto flex items-center justify-between gap-2 border-b border-slate-200 pb-2">
-                  <div className="flex gap-1">
+                  <div className="flex gap-1 flex-wrap">
                     <button
                       onClick={() => setViewMode('processed')}
                       className={`px-2.5 py-1 rounded-md text-[11px] font-bold ${
@@ -269,6 +242,16 @@ export default function AnalyzePage() {
                     >
                       Binary Mask
                     </button>
+                    {analysisResult?.grayscaleImage && (
+                      <button
+                        onClick={() => setViewMode('gray')}
+                        className={`px-2.5 py-1 rounded-md text-[11px] font-bold ${
+                          viewMode === 'gray' ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-700'
+                        }`}
+                      >
+                        Grayscale
+                      </button>
+                    )}
                   </div>
 
                   <button
@@ -333,29 +316,35 @@ export default function AnalyzePage() {
             animate={{ opacity: 1, y: 0 }}
             className="mt-4 pt-4 border-t border-slate-200 space-y-3"
           >
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
               <h3 className="text-xs font-black text-slate-900 uppercase tracking-wide">
                 Quantitative Crack Inspection Analysis
               </h3>
 
-              <div className="flex items-center gap-2.5 text-[10px] font-bold">
+              <div className="flex items-center gap-2 text-[10px] font-bold">
                 <span className="flex items-center gap-1 text-red-600">
                   <span className="w-2 h-2 rounded-full bg-red-600 inline-block" />
-                  Deep Crack
+                  Severe Crack
                 </span>
                 <span className="flex items-center gap-1 text-amber-600">
                   <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
+                  Moderate Crack
+                </span>
+                <span className="flex items-center gap-1 text-cyan-600">
+                  <span className="w-2 h-2 rounded-full bg-cyan-500 inline-block" />
                   Shallow Crack
+                </span>
+                <span className="flex items-center gap-1 text-emerald-600">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+                  Intact Space
                 </span>
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-2.5">
               <div className="glass-panel-card p-3 rounded-xl border border-slate-200 text-center flex flex-col justify-center items-center">
-                <span className="block text-[9px] font-bold text-slate-500 uppercase">Severity</span>
-                <span className="text-[11px] font-black text-blue-900 leading-tight block mt-0.5 whitespace-normal">
-                  {analysisResult.crackSeverity}
-                </span>
+                <span className="block text-[9px] font-bold text-slate-500 uppercase">Crack Density (Dc)</span>
+                <span className="text-base font-black text-blue-900 mt-0.5">{analysisResult.crackDensity}</span>
               </div>
 
               <div className="glass-panel-card p-3 rounded-xl border border-slate-200 text-center flex flex-col justify-center items-center">
@@ -370,17 +359,29 @@ export default function AnalyzePage() {
             </div>
 
             <div className="glass-panel-card p-3 rounded-xl border border-slate-200 space-y-0.5 text-left">
-              <span className="block text-[10px] font-black text-blue-900 uppercase tracking-wide">
-                Identified Structural Fault Regime
-              </span>
+              <div className="flex items-center justify-between">
+                <span className="block text-[10px] font-black text-blue-900 uppercase tracking-wide">
+                  Identified Structural Fault Regime
+                </span>
+                {analysisResult.confidenceScore && (
+                  <span className="text-[10px] font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">
+                    Confidence: {analysisResult.confidenceScore}
+                  </span>
+                )}
+              </div>
               <p className="text-xs font-bold text-slate-800">
                 {analysisResult.faultRegime}
               </p>
               <p className="text-[10px] text-slate-600">
                 {analysisResult.hasCrack
-                  ? `Sharp pixel variance analysis: Deep crack pixels = ${analysisResult.deepCrackCount}, Shallow crack pixels = ${analysisResult.shallowCrackCount}.`
+                  ? `Sharp pixel variance analysis: ${analysisResult.detectedComponentsCount || 1} connected crack component(s) identified.`
                   : 'No structural surface cracking identified across analyzed image pixels.'}
               </p>
+              {analysisResult.disclaimer && (
+                <p className="text-[9px] text-slate-500 italic mt-1 border-t border-slate-200/60 pt-1">
+                  * {analysisResult.disclaimer}
+                </p>
+              )}
             </div>
           </motion.div>
         )}
