@@ -12,8 +12,8 @@ const robotoSlab = Roboto_Slab({
 });
 
 export const metadata: Metadata = {
-  title: "STRUCTURAL CV | Automated Concrete Defect & Crack Inspection Platform",
-  description: "Enterprise computer vision and artificial intelligence infrastructure for concrete damage assessment, crack width measurement, and structural compliance.",
+  title: "ResTructor AI",
+  description: "Advanced computer vision and artificial intelligence infrastructure for concrete damage assessment, crack width measurement, and structural compliance.",
 };
 
 export default function RootLayout({

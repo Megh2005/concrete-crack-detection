@@ -148,24 +148,24 @@ export default function AuthScheme() {
             noValidate
           >
             <div className="text-center mb-5">
-              <h2 className="text-2xl font-black text-slate-900 uppercase tracking-normal">
+              <h2 className="text-2xl font-black text-slate-900 tracking-normal">
                 Sign In
               </h2>
-              <p className="text-xs text-slate-600 font-bold uppercase tracking-wide mt-1">
-                Enter your credentials to sign in
+              <p className="text-xs sm:text-sm text-slate-600 font-medium mt-1">
+                Enter your credentials to access ResTructor AI
               </p>
             </div>
 
             {/* Email Address */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wide text-slate-800 mb-1.5">
+              <label className="block text-xs sm:text-sm font-semibold text-slate-800 mb-1.5">
                 Email Address
               </label>
               <input
                 type="email"
                 value={signInEmail}
                 onChange={(e) => setSignInEmail(e.target.value)}
-                placeholder="engineer@structural.com"
+                placeholder="engineer@restructor.ai"
                 className={`w-full px-4 py-3 rounded-2xl bg-white/90 border ${
                   signInErrors.email ? 'border-red-500 ring-1 ring-red-500' : 'border-slate-300'
                 } focus:outline-none focus:border-blue-600 text-sm font-medium text-slate-900 shadow-sm`}
@@ -183,7 +183,7 @@ export default function AuthScheme() {
 
             {/* Password */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wide text-slate-800 mb-1.5">
+              <label className="block text-xs sm:text-sm font-semibold text-slate-800 mb-1.5">
                 Password
               </label>
               <div className="relative">
@@ -220,7 +220,7 @@ export default function AuthScheme() {
             <div className="pt-2">
               <button
                 type="submit"
-                className="w-full glass-btn-light-primary py-3.5 rounded-full text-xs font-bold tracking-wide uppercase"
+                className="w-full glass-btn-light-primary py-3.5 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase"
               >
                 Sign In
               </button>
@@ -238,18 +238,18 @@ export default function AuthScheme() {
             noValidate
           >
             <div className="text-center mb-4">
-              <h2 className="text-2xl font-black text-slate-900 uppercase tracking-normal">
+              <h2 className="text-2xl font-black text-slate-900 tracking-normal">
                 Sign Up
               </h2>
-              <p className="text-xs text-slate-600 font-bold uppercase tracking-wide mt-1">
-                Enter your details to create an account
+              <p className="text-xs sm:text-sm text-slate-600 font-medium mt-1">
+                Enter your details to create a ResTructor AI account
               </p>
             </div>
 
             {/* Salutation & Full Name */}
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wide text-slate-800 mb-1.5">
+                <label className="block text-xs sm:text-sm font-semibold text-slate-800 mb-1.5">
                   Title
                 </label>
                 <select
@@ -264,7 +264,7 @@ export default function AuthScheme() {
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs font-bold uppercase tracking-wide text-slate-800 mb-1.5">
+                <label className="block text-xs sm:text-sm font-semibold text-slate-800 mb-1.5">
                   Full Name
                 </label>
                 <input
@@ -290,14 +290,14 @@ export default function AuthScheme() {
 
             {/* Email Address */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wide text-slate-800 mb-1.5">
+              <label className="block text-xs sm:text-sm font-semibold text-slate-800 mb-1.5">
                 Email Address
               </label>
               <input
                 type="email"
                 value={signUpEmail}
                 onChange={(e) => setSignUpEmail(e.target.value)}
-                placeholder="jane.doe@structural.com"
+                placeholder="jane.doe@restructor.ai"
                 className={`w-full px-4 py-3 rounded-2xl bg-white/90 border ${
                   signUpErrors.email ? 'border-red-500 ring-1 ring-red-500' : 'border-slate-300'
                 } focus:outline-none focus:border-blue-600 text-sm font-medium text-slate-900 shadow-sm`}
@@ -315,7 +315,7 @@ export default function AuthScheme() {
 
             {/* Password */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wide text-slate-800 mb-1.5">
+              <label className="block text-xs sm:text-sm font-semibold text-slate-800 mb-1.5">
                 Password (8-12 Characters)
               </label>
               <div className="relative">
@@ -354,7 +354,7 @@ export default function AuthScheme() {
             <div className="pt-3">
               <button
                 type="submit"
-                className="w-full glass-btn-light-primary py-3.5 rounded-full text-xs font-bold tracking-wide uppercase"
+                className="w-full glass-btn-light-primary py-3.5 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase"
               >
                 Sign Up
               </button>
