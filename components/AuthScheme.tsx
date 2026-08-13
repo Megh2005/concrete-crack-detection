@@ -1,12 +1,15 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, LogOut, UserCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 export default function AuthScheme() {
+  const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState<'signin' | 'signup'>('signin');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [signInEmail, setSignInEmail] = useState('');
   const [signInPassword, setSignInPassword] = useState('');
@@ -25,7 +28,7 @@ export default function AuthScheme() {
     password?: string;
   }>({});
 
-  const handleSignInSubmit = (e: React.FormEvent) => {
+  const handleSignInSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errors: { email?: string; password?: string } = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -42,14 +45,37 @@ export default function AuthScheme() {
 
     setSignInErrors(errors);
 
-    if (Object.keys(errors).length === 0) {
-      toast.success(`Signed in successfully as ${signInEmail}!`);
-    } else {
-      toast.error('Please correct the highlighted errors before submitting.');
+    if (Object.keys(errors).length > 0) {
+      toast.error('Please resolve the highlighted errors.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    const toastId = toast.loading('Authenticating credentials...');
+
+    try {
+      const res = await signIn('credentials', {
+        email: signInEmail.trim(),
+        password: signInPassword,
+        redirect: false,
+      });
+
+      setIsSubmitting(false);
+
+      if (res?.error) {
+        toast.error(res.error, { id: toastId });
+      } else {
+        toast.success('Signed in successfully!', { id: toastId });
+        setSignInEmail('');
+        setSignInPassword('');
+      }
+    } catch {
+      setIsSubmitting(false);
+      toast.error('An unexpected error occurred during authentication.', { id: toastId });
     }
   };
 
-  const handleSignUpSubmit = (e: React.FormEvent) => {
+  const handleSignUpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errors: {
       salutation?: string;
@@ -81,12 +107,87 @@ export default function AuthScheme() {
 
     setSignUpErrors(errors);
 
-    if (Object.keys(errors).length === 0) {
-      toast.success(`Account created successfully for ${salutation} ${signUpName}!`);
-    } else {
-      toast.error('Please correct the highlighted errors before submitting.');
+    if (Object.keys(errors).length > 0) {
+      toast.error('Please resolve the highlighted errors.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    const toastId = toast.loading('Registering account...');
+
+    try {
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          salutation,
+          name: signUpName.trim(),
+          email: signUpEmail.trim(),
+          password: signUpPassword,
+        }),
+      });
+
+      const data = await response.json();
+      setIsSubmitting(false);
+
+      if (!response.ok || !data.success) {
+        toast.error(data.error || 'Failed to register account.', { id: toastId });
+      } else {
+        toast.success('Account created successfully!', { id: toastId });
+
+        await signIn('credentials', {
+          email: signUpEmail.trim(),
+          password: signUpPassword,
+          redirect: false,
+        });
+
+        setSignUpName('');
+        setSignUpEmail('');
+        setSignUpPassword('');
+      }
+    } catch {
+      setIsSubmitting(false);
+      toast.error('An error occurred while creating your account.', { id: toastId });
     }
   };
+
+  if (status === 'authenticated' && session?.user) {
+    return (
+      <div className="max-w-[460px] mx-auto glass-panel-light-theme rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative overflow-hidden border border-black/10 my-6 text-center">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="flex justify-center mb-4">
+          <div className="w-16 h-16 rounded-full bg-blue-100 border border-blue-300 text-blue-700 flex items-center justify-center shadow-md">
+            <UserCheck size={32} />
+          </div>
+        </div>
+
+        <h2 className="text-2xl font-black text-slate-900 tracking-normal mb-1">
+          Welcome, {(session.user as any).salutation || ''} {session.user.name}
+        </h2>
+        <p className="text-xs sm:text-sm text-slate-600 font-medium mb-6">
+          {session.user.email}
+        </p>
+
+        <div className="p-4 rounded-2xl bg-blue-50/80 border border-blue-200/80 text-xs font-medium text-slate-700 mb-6">
+          Authenticated Session Active (Expires in 24 Hours)
+        </div>
+
+        <button
+          onClick={() => {
+            const toastId = toast.loading('Signing out...');
+            signOut({ redirect: false }).then(() => {
+              toast.success('Signed out successfully.', { id: toastId });
+            });
+          }}
+          className="w-full glass-btn-light-secondary py-3.5 rounded-full text-xs font-bold tracking-wide uppercase flex items-center justify-center gap-2"
+        >
+          <LogOut size={16} />
+          Sign Out of Workspace
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-[460px] mx-auto glass-panel-light-theme rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative overflow-hidden border border-black/10 my-6">
@@ -158,9 +259,10 @@ export default function AuthScheme() {
                 value={signInEmail}
                 onChange={(e) => setSignInEmail(e.target.value)}
                 placeholder="engineer@restructor.ai"
+                disabled={isSubmitting}
                 className={`w-full px-4 py-3 rounded-2xl bg-white/90 border ${
                   signInErrors.email ? 'border-red-500 ring-1 ring-red-500' : 'border-slate-300'
-                } focus:outline-none focus:border-blue-600 text-sm font-medium text-slate-900 shadow-sm`}
+                } focus:outline-none focus:border-blue-600 text-sm font-medium text-slate-900 shadow-sm disabled:opacity-50`}
               />
               {signInErrors.email && (
                 <motion.p
@@ -183,9 +285,10 @@ export default function AuthScheme() {
                   value={signInPassword}
                   onChange={(e) => setSignInPassword(e.target.value)}
                   placeholder="Enter password"
+                  disabled={isSubmitting}
                   className={`w-full px-4 py-3 pr-12 rounded-2xl bg-white/90 border ${
                     signInErrors.password ? 'border-red-500 ring-1 ring-red-500' : 'border-slate-300'
-                  } focus:outline-none focus:border-blue-600 text-sm font-medium text-slate-900 shadow-sm`}
+                  } focus:outline-none focus:border-blue-600 text-sm font-medium text-slate-900 shadow-sm disabled:opacity-50`}
                 />
                 <button
                   type="button"
@@ -210,9 +313,10 @@ export default function AuthScheme() {
             <div className="pt-2">
               <button
                 type="submit"
-                className="w-full glass-btn-light-primary py-3.5 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase"
+                disabled={isSubmitting}
+                className="w-full glass-btn-light-primary py-3.5 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase disabled:opacity-50"
               >
-                Sign In
+                {isSubmitting ? 'Authenticating...' : 'Sign In'}
               </button>
             </div>
           </motion.form>
@@ -244,7 +348,8 @@ export default function AuthScheme() {
                 <select
                   value={salutation}
                   onChange={(e) => setSalutation(e.target.value as 'Mr.' | 'Ms.' | 'Mrs.')}
-                  className="w-full px-3 py-3 rounded-2xl bg-white/90 border border-slate-300 focus:outline-none focus:border-blue-600 text-sm font-medium text-slate-900 shadow-sm cursor-pointer"
+                  disabled={isSubmitting}
+                  className="w-full px-3 py-3 rounded-2xl bg-white/90 border border-slate-300 focus:outline-none focus:border-blue-600 text-sm font-medium text-slate-900 shadow-sm cursor-pointer disabled:opacity-50"
                 >
                   <option value="Mr.">Mr.</option>
                   <option value="Ms.">Ms.</option>
@@ -261,9 +366,10 @@ export default function AuthScheme() {
                   value={signUpName}
                   onChange={(e) => setSignUpName(e.target.value)}
                   placeholder="Jane Doe"
+                  disabled={isSubmitting}
                   className={`w-full px-4 py-3 rounded-2xl bg-white/90 border ${
                     signUpErrors.name ? 'border-red-500 ring-1 ring-red-500' : 'border-slate-300'
-                  } focus:outline-none focus:border-blue-600 text-sm font-medium text-slate-900 shadow-sm`}
+                  } focus:outline-none focus:border-blue-600 text-sm font-medium text-slate-900 shadow-sm disabled:opacity-50`}
                 />
                 {signUpErrors.name && (
                   <motion.p
@@ -286,9 +392,10 @@ export default function AuthScheme() {
                 value={signUpEmail}
                 onChange={(e) => setSignUpEmail(e.target.value)}
                 placeholder="jane.doe@restructor.ai"
+                disabled={isSubmitting}
                 className={`w-full px-4 py-3 rounded-2xl bg-white/90 border ${
                   signUpErrors.email ? 'border-red-500 ring-1 ring-red-500' : 'border-slate-300'
-                } focus:outline-none focus:border-blue-600 text-sm font-medium text-slate-900 shadow-sm`}
+                } focus:outline-none focus:border-blue-600 text-sm font-medium text-slate-900 shadow-sm disabled:opacity-50`}
               />
               {signUpErrors.email && (
                 <motion.p
@@ -313,9 +420,10 @@ export default function AuthScheme() {
                   placeholder="8-12 characters"
                   minLength={8}
                   maxLength={12}
+                  disabled={isSubmitting}
                   className={`w-full px-4 py-3 pr-12 rounded-2xl bg-white/90 border ${
                     signUpErrors.password ? 'border-red-500 ring-1 ring-red-500' : 'border-slate-300'
-                  } focus:outline-none focus:border-blue-600 text-sm font-medium text-slate-900 shadow-sm`}
+                  } focus:outline-none focus:border-blue-600 text-sm font-medium text-slate-900 shadow-sm disabled:opacity-50`}
                 />
                 <button
                   type="button"
@@ -340,9 +448,10 @@ export default function AuthScheme() {
             <div className="pt-3">
               <button
                 type="submit"
-                className="w-full glass-btn-light-primary py-3.5 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase"
+                disabled={isSubmitting}
+                className="w-full glass-btn-light-primary py-3.5 rounded-full text-xs sm:text-sm font-bold tracking-wide uppercase disabled:opacity-50"
               >
-                Sign Up
+                {isSubmitting ? 'Registering...' : 'Sign Up'}
               </button>
             </div>
           </motion.form>

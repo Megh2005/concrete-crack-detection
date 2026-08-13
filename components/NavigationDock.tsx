@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, LogIn } from 'lucide-react';
+import { Home, LogIn, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const DOCK_ITEMS = [
   { id: 'home', name: 'Home', href: '/', icon: Home },
   { id: 'auth', name: 'Authentication', href: '/auth', icon: LogIn },
+  { id: 'docs', name: 'Documentation', href: '/docs', icon: FileText },
 ];
 
 export default function NavigationDock() {
