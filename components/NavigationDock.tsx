@@ -3,11 +3,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, FileText, User, LogIn } from 'lucide-react';
+import { Home, FileText, User, LogIn, Camera } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const DOCK_ITEMS = [
   { id: 'home', name: 'Home', href: '/', icon: Home },
+  { id: 'analyze', name: 'Analyze', href: '/analyze', icon: Camera },
   { id: 'docs', name: 'Documentation', href: '/docs', icon: FileText },
   { id: 'profile', name: 'Profile', href: '/profile', icon: User },
   { id: 'auth', name: 'Authentication', href: '/auth', icon: LogIn },
