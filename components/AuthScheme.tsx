@@ -20,13 +20,11 @@ export default function AuthScheme() {
   const [signUpEmail, setSignUpEmail] = useState('');
   const [signUpPassword, setSignUpPassword] = useState('');
   const [showSignUpPassword, setShowSignUpPassword] = useState(false);
-  const [isAge18Verified, setIsAge18Verified] = useState(false);
   const [signUpErrors, setSignUpErrors] = useState<{
     salutation?: string;
     name?: string;
     email?: string;
     password?: string;
-    age18?: string;
   }>({});
 
   // Sign In Submit
@@ -62,7 +60,6 @@ export default function AuthScheme() {
       name?: string;
       email?: string;
       password?: string;
-      age18?: string;
     } = {};
 
     if (!salutation) {
@@ -84,10 +81,6 @@ export default function AuthScheme() {
       errors.password = 'Password is required.';
     } else if (signUpPassword.length < 8 || signUpPassword.length > 12) {
       errors.password = 'Password must be strictly 8 to 12 characters long.';
-    }
-
-    if (!isAge18Verified) {
-      errors.age18 = 'You must confirm that you are at least 18 years of age.';
     }
 
     setSignUpErrors(errors);
@@ -357,32 +350,8 @@ export default function AuthScheme() {
               )}
             </div>
 
-            {/* 18+ Age Checkbox */}
-            <div className="pt-1">
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isAge18Verified}
-                  onChange={(e) => setIsAge18Verified(e.target.checked)}
-                  className="mt-0.5 w-4 h-4 rounded text-blue-700 focus:ring-blue-600 border-slate-300 cursor-pointer"
-                />
-                <span className="text-xs font-bold text-slate-800 leading-snug">
-                  I confirm that I am at least 18 years of age.
-                </span>
-              </label>
-              {signUpErrors.age18 && (
-                <motion.p
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-xs font-bold text-red-600 mt-1"
-                >
-                  {signUpErrors.age18}
-                </motion.p>
-              )}
-            </div>
-
             {/* Submit Button */}
-            <div className="pt-2">
+            <div className="pt-3">
               <button
                 type="submit"
                 className="w-full glass-btn-light-primary py-3.5 rounded-full text-xs font-bold tracking-wide uppercase"

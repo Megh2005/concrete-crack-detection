@@ -8,7 +8,6 @@ import NavigationDock from "@/components/NavigationDock";
 
 const robotoSlab = Roboto_Slab({
   subsets: ["latin"],
-  variable: "--font-roboto-slab",
   display: "swap",
 });
 
@@ -24,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="light">
-      <body className={`${robotoSlab.className} ${robotoSlab.variable} bg-white text-slate-900 min-h-screen antialiased selection:bg-blue-600 selection:text-white font-sans pb-20`}>
+      <body className={`${robotoSlab.className} bg-white text-slate-900 min-h-screen antialiased selection:bg-blue-600 selection:text-white font-sans pb-20`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

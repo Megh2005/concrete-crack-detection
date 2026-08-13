@@ -12,8 +12,8 @@
 
 @layer base {
   .theme {
-    --font-heading: var(--font-roboto-slab);
-    --font-sans: var(--font-roboto-slab);
+    --font-heading: 'Roboto Slab', serif;
+    --font-sans: 'Roboto Slab', serif;
   }
   :root {
     --background: oklch(1 0 0);
