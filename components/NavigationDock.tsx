@@ -29,7 +29,6 @@ export default function NavigationDock() {
               onMouseEnter={() => setHoveredItem(item.id)}
               onMouseLeave={() => setHoveredItem(null)}
             >
-              {/* Tooltip on Hover */}
               <AnimatePresence>
                 {hoveredItem === item.id && (
                   <motion.div
@@ -40,13 +39,11 @@ export default function NavigationDock() {
                     className="absolute bottom-full mb-1 px-3 py-1 rounded-full bg-slate-900 text-white text-[11px] font-bold tracking-wide shadow-lg whitespace-nowrap pointer-events-none"
                   >
                     {item.name}
-                    {/* Tooltip Arrow */}
                     <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              {/* Dock Icon Button */}
               <Link href={item.href}>
                 <motion.div
                   whileHover={{ scale: 1.16, y: -2 }}

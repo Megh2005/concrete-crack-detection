@@ -8,13 +8,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function AuthScheme() {
   const [activeTab, setActiveTab] = useState<'signin' | 'signup'>('signin');
 
-  // Sign In State
   const [signInEmail, setSignInEmail] = useState('');
   const [signInPassword, setSignInPassword] = useState('');
   const [showSignInPassword, setShowSignInPassword] = useState(false);
   const [signInErrors, setSignInErrors] = useState<{ email?: string; password?: string }>({});
 
-  // Sign Up State
   const [salutation, setSalutation] = useState<'Mr.' | 'Ms.' | 'Mrs.'>('Mr.');
   const [signUpName, setSignUpName] = useState('');
   const [signUpEmail, setSignUpEmail] = useState('');
@@ -27,7 +25,6 @@ export default function AuthScheme() {
     password?: string;
   }>({});
 
-  // Sign In Submit
   const handleSignInSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const errors: { email?: string; password?: string } = {};
@@ -52,7 +49,6 @@ export default function AuthScheme() {
     }
   };
 
-  // Sign Up Submit
   const handleSignUpSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const errors: {
@@ -94,10 +90,8 @@ export default function AuthScheme() {
 
   return (
     <div className="max-w-[460px] mx-auto glass-panel-light-theme rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative overflow-hidden border border-black/10 my-6">
-      {/* Ambient Glow */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Smooth Pill Tab Switcher */}
       <div className="flex justify-center mb-6">
         <div className="glass-panel-card p-1.5 rounded-full flex gap-1 border border-black/10 shadow-md relative">
           <button
@@ -134,7 +128,6 @@ export default function AuthScheme() {
         </div>
       </div>
 
-      {/* Tab Panel Content */}
       <AnimatePresence mode="wait">
         {activeTab === 'signin' ? (
           <motion.form
@@ -156,7 +149,6 @@ export default function AuthScheme() {
               </p>
             </div>
 
-            {/* Email Address */}
             <div>
               <label className="block text-xs sm:text-sm font-semibold text-slate-800 mb-1.5">
                 Email Address
@@ -181,7 +173,6 @@ export default function AuthScheme() {
               )}
             </div>
 
-            {/* Password */}
             <div>
               <label className="block text-xs sm:text-sm font-semibold text-slate-800 mb-1.5">
                 Password
@@ -216,7 +207,6 @@ export default function AuthScheme() {
               )}
             </div>
 
-            {/* Submit Button */}
             <div className="pt-2">
               <button
                 type="submit"
@@ -246,7 +236,6 @@ export default function AuthScheme() {
               </p>
             </div>
 
-            {/* Salutation & Full Name */}
             <div className="grid grid-cols-3 gap-3">
               <div>
                 <label className="block text-xs sm:text-sm font-semibold text-slate-800 mb-1.5">
@@ -288,7 +277,6 @@ export default function AuthScheme() {
               </div>
             </div>
 
-            {/* Email Address */}
             <div>
               <label className="block text-xs sm:text-sm font-semibold text-slate-800 mb-1.5">
                 Email Address
@@ -313,7 +301,6 @@ export default function AuthScheme() {
               )}
             </div>
 
-            {/* Password */}
             <div>
               <label className="block text-xs sm:text-sm font-semibold text-slate-800 mb-1.5">
                 Password (8-12 Characters)
@@ -350,7 +337,6 @@ export default function AuthScheme() {
               )}
             </div>
 
-            {/* Submit Button */}
             <div className="pt-3">
               <button
                 type="submit"
